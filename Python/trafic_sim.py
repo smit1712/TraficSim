@@ -7,8 +7,8 @@ import websockets
 import json
 import threading
 
-    
 
+stop_threads = False
 
 class traffic_object:
     def __init__(self, A1, A2, A3, A4, AB1, AB2, B1, B2, B3, B4, B5, BB1, C1, C2, C3, D1, D2, D3, E1, E2, EV1, EV2, EV3, EV4, FF1, FF2, FV1, FV2, FV3, FV4, GF1, GF2, GV1, GV2, GV3, GV4):
@@ -49,20 +49,29 @@ class traffic_object:
         self.GV3 = GV3
         self.GV4 = GV4
 
-def websocket_init():
-    # uri = "ws://trafic.azurewebsites.net/controller"
-    uri = "ws://18df0816.ngrok.io"
-    ws = websockets.connect(uri)
-    print("WS CONNECTED ON: " + uri )
-    return ws
+class myThread(threading.Thread):
+    def __init__(self, thread_id):
+        global stop_threads
+        self.stop_thread = stop_threads
+        self.thread_number = thread_id
+        threading.Thread.__init__(self)
 
-def websocket_receive(websockets):
-    while(True):
-        data = websockets.recv()
-        print(f"< {data}")
-    websockets.close()
-    print("websocketclosed")
-    
+    def run(self):
+        loop = asyncio.new_event_loop() # event loop aanmaken
+        asyncio.set_event_loop(loop) # allebei
+        asyncio.get_event_loop().run_until_complete(self.websocket_receive())
+
+    async def websocket_receive(self):
+        uri = "ws://localhost:5000"
+        ws = await websockets.connect(uri)
+        print(f"WS CONNECTED ON: {uri} Thread id: {self.thread_number}")
+        while(True):
+            if self.stop_thread:
+                break
+            data = await ws.recv()
+            print(f"< {data}")
+        ws.close()
+        print("websocketclosed")
 
 async def websocket_send():
     data = {"A1": len(lights[0].cars), "A2": len(lights[1].cars), "A3": len(lights[2].cars), "A4": len(lights[3].cars), "AB1": 0, "AB2": 0,
@@ -71,9 +80,9 @@ async def websocket_send():
                 "E1": 0, "E2": 0, "EV1": 0, "EV2": 0, "EV3": 0, "EV4": 0,
                 "FF1": 0, "FF2": 0, "FV1": 0, "FV2": 0, "FV3": 0, "FV4": 0,
                 "GF1": 0, "GF2": 0, "GV1": 0, "GV2": 0, "GV3": 0, "GV4": 0}
-    uri1 = "ws://trafic.azurewebsites.net/controller"
+    uri = "ws://localhost:5000"
     # json_dump = json.dumps(data)
-    # await main.ws.send(json_dump)  
+    # await main.ws.send(json_dump)
     # greeting = await main.ws.recv()
 
     # print(f"< {greeting}")
@@ -182,8 +191,7 @@ nextSpawn = datetime.now() + timedelta(0,1)
 nextGreen = datetime.now() + timedelta(0,3) 
 nextSend = datetime.now() + timedelta(0,3) 
 
-ws = websocket_init()
-websocketthread = threading.Thread(target=websocket_receive,args=ws)
+websocketthread = myThread(1)
 websocketthread.start()
 
 while not crashed:
@@ -232,6 +240,8 @@ while not crashed:
 
     pygame.display.update()
     clock.tick(120)
-ws.close()
+
+websocketthread.join()
+stop_threads = True
 pygame.quit()
 quit()
