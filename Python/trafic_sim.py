@@ -4,75 +4,7 @@ from random import seed
 from random import randint
 import asyncio
 import websockets
-import json
-
-    
-
-
-class traffic_object:
-    def __init__(self, A1, A2, A3, A4, AB1, AB2, B1, B2, B3, B4, B5, BB1, C1, C2, C3, D1, D2, D3, E1, E2, EV1, EV2, EV3, EV4, FF1, FF2, FV1, FV2, FV3, FV4, GF1, GF2, GV1, GV2, GV3, GV4):
-        self.A1 = A1
-        self.A2 = A2
-        self.A3 = A3
-        self.A4 = A4
-        self.AB1 = AB1
-        self.AB2 = AB2
-        self.B1 = B1
-        self.B2 = B2
-        self.B3 = B3
-        self.B4 = B4
-        self.B5 = B5
-        self.BB1 = BB1
-        self.C1 = C1
-        self.C2 = C2
-        self.C3 = C3
-        self.D1 = D1
-        self.D2 = D2
-        self.D3 = D3
-        self.E1 = E1
-        self.E2 = E2
-        self.EV1 = EV1
-        self.EV2 = EV2
-        self.EV3 = EV3
-        self.EV4 = EV4
-        self.FF1 = FF1
-        self.FF2 = FF2
-        self.FV1 = FV1
-        self.FV2 = FV2
-        self.FV3 = FV3
-        self.FV4 = FV4
-        self.GF1 = GF1
-        self.GF2 = GF2
-        self.GV1 = GV1
-        self.GV2 = GV2
-        self.GV3 = GV3
-        self.GV4 = GV4
-
-async def websocket_init():
-    uri = "ws://trafic.azurewebsites.net/controller"
-    ws = await websockets.connect(uri)
-    return ws
-
-async def websocket_receive(websockets):
-    while(not crashed):
-        data = await ws.recv()
-        print(f"< {data}")
-    websockets.close()
-    
-
-async def websocket_send():
-    data = {"A1": len(lights[0].cars), "A2": len(lights[1].cars), "A3": len(lights[2].cars), "A4": len(lights[3].cars), "AB1": 0, "AB2": 0,
-                "B1": len(lights[4].cars), "B2": len(lights[5].cars), "B3": len(lights[6].cars), "B4": 0, "B5":0, "BB1": 0,
-                "C1":  len(lights[7].cars), "C2": len(lights[8].cars), "C3": len(lights[9].cars), "D1": len(lights[10].cars), "D2": len(lights[11].cars), "D3": len(lights[12].cars),
-                "E1": 0, "E2": 0, "EV1": 0, "EV2": 0, "EV3": 0, "EV4": 0,
-                "FF1": 0, "FF2": 0, "FV1": 0, "FV2": 0, "FV3": 0, "FV4": 0,
-                "GF1": 0, "GF2": 0, "GV1": 0, "GV2": 0, "GV3": 0, "GV4": 0}
-    uri1 = "ws://trafic.azurewebsites.net/controller"
-    # json_dump = json.dumps(data)
-    # await main.ws.send(json_dump)  
-    # greeting = await main.ws.recv()
-
-    # print(f"< {greeting}")
+import json   
 
 
 seed(1)
@@ -209,9 +141,10 @@ while not crashed:
         lights[i].status = "Green"
         print(lights[i].name)
         nextGreen = datetime.now() + timedelta(0,15)
-    if(datetime.now() > nextSend):
-        asyncio.get_event_loop().run_until_complete(websocket_send())     
-        nextSpawn = datetime.now() + timedelta(0,2)
+        
+    # if(datetime.now() > nextSend):
+    #     asyncio.get_event_loop().run_until_complete(websocket_send())     
+    #     nextSpawn = datetime.now() + timedelta(0,2)
 
 
     for l in lights:
@@ -226,10 +159,3 @@ while not crashed:
 
 pygame.quit()
 quit()
-
-# def main():
-#     ws = websocket_init()
-#     asyncio.get_event_loop().run_forever(websocket_receive(ws))    
-
-# if __name__ == '__main__':
-#     main()
