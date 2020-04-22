@@ -9,9 +9,21 @@ import threading
 
 
 stop_threads = False
+uri = "ws://c37dad05.ngrok.io/"
+websocket = None
+
+async def connectServer():
+    global uri
+    global websocket
+    websocket = await websockets.connect(uri)
+    ws_receive = myThreadReceive(1)
+    ws_send = myThreadSend(2)
+    ws_receive.start()
+    ws_send.start()
+    return
 
 class traffic_object:
-    def __init__(self, A1, A2, A3, A4, AB1, AB2, B1, B2, B3, B4, B5, BB1, C1, C2, C3, D1, D2, D3, E1, E2, EV1, EV2, EV3, EV4, FF1, FF2, FV1, FV2, FV3, FV4, GF1, GF2, GV1, GV2, GV3, GV4):
+    def __init__(self, A1, A2, A3, A4, AB1, AB2, B1, B2, B3, B4, B5, BB1, C1, C2, C3, D1, D2, D3, E1, EV1, EV2, EV3, EV4, FF1, FF2, FV1, FV2, FV3, FV4, GF1, GF2, GV1, GV2, GV3, GV4):
         self.A1 = A1
         self.A2 = A2
         self.A3 = A3
@@ -31,7 +43,6 @@ class traffic_object:
         self.D2 = D2
         self.D3 = D3
         self.E1 = E1
-        self.E2 = E2
         self.EV1 = EV1
         self.EV2 = EV2
         self.EV3 = EV3
@@ -49,43 +60,61 @@ class traffic_object:
         self.GV3 = GV3
         self.GV4 = GV4
 
-class myThread(threading.Thread):
+class myThreadReceive(threading.Thread):
     def __init__(self, thread_id):
         global stop_threads
+        global websocket
         self.stop_thread = stop_threads
+        self.ws = websocket
         self.thread_number = thread_id
         threading.Thread.__init__(self)
 
     def run(self):
-        loop = asyncio.new_event_loop() # event loop aanmaken
-        asyncio.set_event_loop(loop) # allebei
+        loop_receive = asyncio.new_event_loop() # event loop aanmaken
+        asyncio.set_event_loop(loop_receive) # allebei
         asyncio.get_event_loop().run_until_complete(self.websocket_receive())
 
     async def websocket_receive(self):
-        uri = "ws://localhost:5000"
-        ws = await websockets.connect(uri)
+        # uri = "ws://localhost:5000"
         print(f"WS CONNECTED ON: {uri} Thread id: {self.thread_number}")
         while(True):
-            if self.stop_thread:
-                break
-            data = await ws.recv()
+            data = await self.ws.recv()
+            js = json.loads(data)
+            for l in lights:
+                status = js[l.name]
+                if status == 2:
+                    l.status = "Green"
+                else:
+                    l.status = "Red"
             print(f"< {data}")
-        ws.close()
+        self.ws.close()
         print("websocketclosed")
 
-async def websocket_send():
-    data = {"A1": len(lights[0].cars), "A2": len(lights[1].cars), "A3": len(lights[2].cars), "A4": len(lights[3].cars), "AB1": 0, "AB2": 0,
-                "B1": len(lights[4].cars), "B2": len(lights[5].cars), "B3": len(lights[6].cars), "B4": 0, "B5":0, "BB1": 0,
+class myThreadSend(threading.Thread):
+    def __init__(self, thread_id):
+        global stop_threads
+        global websocket
+        self.stop_thread = stop_threads
+        self.ws = websocket
+        self.thread_number = thread_id
+        threading.Thread.__init__(self)
+
+    def run(self):
+        loop_send = asyncio.new_event_loop()  # event loop aanmaken
+        asyncio.set_event_loop(loop_send)  # allebei
+        asyncio.get_event_loop().run_until_complete(self.websocket_send())
+
+    async def websocket_send(self):
+        data = {"A1": len(lights[0].cars), "A2": len(lights[1].cars), "A3": len(lights[2].cars), "A4": len(lights[3].cars), "AB1": 0, "AB2": 0,
+                "B1": len(lights[4].cars), "B2": len(lights[5].cars), "B3": len(lights[6].cars), "B4": 0, "B5": 0, "BB1": 0,
                 "C1":  len(lights[7].cars), "C2": len(lights[8].cars), "C3": len(lights[9].cars), "D1": len(lights[10].cars), "D2": len(lights[11].cars), "D3": len(lights[12].cars),
-                "E1": 0, "E2": 0, "EV1": 0, "EV2": 0, "EV3": 0, "EV4": 0,
+                "E1": 0, "EV1": 0, "EV2": 0, "EV3": 0, "EV4": 0,
                 "FF1": 0, "FF2": 0, "FV1": 0, "FV2": 0, "FV3": 0, "FV4": 0,
                 "GF1": 0, "GF2": 0, "GV1": 0, "GV2": 0, "GV3": 0, "GV4": 0}
-    uri = "ws://localhost:5000"
-    # json_dump = json.dumps(data)
-    # await main.ws.send(json_dump)
-    # greeting = await main.ws.recv()
+        json_dump = json.dumps(data)
+        await self.ws.send(json_dump)
 
-    # print(f"< {greeting}")
+        print(f"< {json_dump}")
 
 
 seed(1)
@@ -191,57 +220,65 @@ nextSpawn = datetime.now() + timedelta(0,1)
 nextGreen = datetime.now() + timedelta(0,3) 
 nextSend = datetime.now() + timedelta(0,3) 
 
-websocketthread = myThread(1)
-websocketthread.start()
+def main():
+    global crashed
+    global nextSpawn
 
-while not crashed:
-    now = datetime.now()
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            crashed = True
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            print(pygame.mouse.get_pos())
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    result = loop.run_until_complete(connectServer())
+    loop.run_forever()
 
-    crossroad(0, 0)
+    while not crashed:
+        now = datetime.now()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                crashed = True
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                print(pygame.mouse.get_pos())
 
-    x, y = pygame.mouse.get_pos()
-    for c in cars:
-        if c.driveIndex == len(c.traficlight.route):
-           cars.remove(c)
-           c.traficlight.cars.remove(c)
-           del c
-           break
-        c.drive()   
-        Drawcar(c.x, c.y)
- 
-    if(now > nextSpawn):
-        i = randint(0, len(lights) -1)
-        cars.append(car(lights[i]))
-        nextSpawn = now + timedelta(seconds=3)
+        crossroad(0, 0)
 
-    if(now > nextGreen):
-        i = randint(0, len(lights) -1)
+        x, y = pygame.mouse.get_pos()
+        for c in cars:
+            if c.driveIndex == len(c.traficlight.route):
+                cars.remove(c)
+                c.traficlight.cars.remove(c)
+                del c
+                break
+            c.drive()   
+            Drawcar(c.x, c.y)
+    
+        if(now > nextSpawn):
+            i = randint(0, len(lights) -1)
+            cars.append(car(lights[i]))
+            nextSpawn = now + timedelta(seconds=3)
+
+        # if(now > nextGreen):
+        #     i = randint(0, len(lights) -1)
+        #     for l in lights:
+        #         l.status = "Red"
+        #     lights[i].status = "Green"
+        #     print(lights[i].name)
+        #     nextGreen = now + timedelta(seconds=10)
+        # # if(now > nextSend):
+        #     # asyncio.get_event_loop().run_until_complete(websocket_send())     
+        #     # nextSpawn = datetime.now() + timedelta(seconds=5)
+
+
         for l in lights:
-            l.status = "Red"
-        lights[i].status = "Green"
-        print(lights[i].name)
-        nextGreen = now + timedelta(seconds=10)
-    # if(now > nextSend):
-        # asyncio.get_event_loop().run_until_complete(websocket_send())     
-        # nextSpawn = datetime.now() + timedelta(seconds=5)
+            if l.status == "Green":
+                pygame.draw.rect(gameDisplay, GREEN, (l.Position[0],l.Position[1],25,25), 0)     
+            if l.status == "Red":
+                pygame.draw.rect(gameDisplay, RED, (l.Position[0],l.Position[1],25,25), 0)     
 
 
-    for l in lights:
-        if l.status == "Green":
-            pygame.draw.rect(gameDisplay, GREEN, (l.Position[0],l.Position[1],25,25), 0)     
-        if l.status == "Red":
-            pygame.draw.rect(gameDisplay, RED, (l.Position[0],l.Position[1],25,25), 0)     
+        pygame.display.update()
+        clock.tick(120)
 
 
-    pygame.display.update()
-    clock.tick(120)
-
-websocketthread.join()
-stop_threads = True
-pygame.quit()
-quit()
+if __name__ == "__main__":
+    main()
+    stop_threads = True
+    pygame.quit()
+    quit()
