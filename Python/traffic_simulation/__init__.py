@@ -5,33 +5,22 @@ from datetime import datetime, timedelta
 
 from traffic_simulation.objects import TrafficLight, Car
 
+# region Logging
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO)
 
 LOGGER = logging.getLogger(__name__)
+# endregion
 
-URI = "ws://localhost:5000"
+# region Connection settings
+URI = "ws://61c85c95.ngrok.io/"
+# endregion
 
+# region Global vars
 CRASHED = False
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
-
-pygame.init()
-pygame.display.set_mode
-
-display_width = 1238
-display_height = 897
-
-GAME_DISPLAY = pygame.display.set_mode(
-    (display_width, display_height), pygame.RESIZABLE)
-pygame.display.set_caption('trafic sim')
-
-
-CLOCK = pygame.time.Clock()
-
-CROSS_ROAD_IMG = pygame.image.load('verkeerslichten.png')
-CAR_IMG = pygame.image.load("car.jpg").convert_alpha()
 
 LIGHTS = [
     TrafficLight("A1", [(631, 885), (629, 728), (634, 473),
@@ -68,3 +57,21 @@ CARS = [Car(LIGHTS[0])]
 NEXT_SPAWN = datetime.now() + timedelta(0, 1)
 NEXT_GREEN = datetime.now() + timedelta(0, 3)
 NEXT_SEND = datetime.now() + timedelta(0, 3)
+# endregion
+
+# region Pygame settings
+pygame.init()
+pygame.display.set_mode
+
+display_width = 1238
+display_height = 897
+
+GAME_DISPLAY = pygame.display.set_mode(
+    (display_width, display_height), pygame.RESIZABLE)
+pygame.display.set_caption('trafic sim')
+
+CLOCK = pygame.time.Clock()
+
+CROSS_ROAD_IMG = pygame.image.load('verkeerslichten.png')
+CAR_IMG = pygame.image.load("car.jpg").convert_alpha()
+# endregion

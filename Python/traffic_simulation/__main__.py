@@ -1,12 +1,10 @@
-import pygame
-import pyautogui
-import math
 import asyncio
-from datetime import datetime, timedelta
-from random import seed
-from random import randint
-import websockets
+import pygame, pyautogui, math
 import threading
+import json
+from datetime import datetime, timedelta
+from random import seed, randint
+from websocket import create_connection
 
 from traffic_simulation.connection_classes import ThreadingReceive, ThreadingSend
 from traffic_simulation.objects import TrafficLight, Car
@@ -15,32 +13,15 @@ from traffic_simulation import URI, CRASHED, GAME_DISPLAY, GREEN, RED, CLOCK, CR
 
 seed(1)
 
-def threading_temp():
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    result = loop.run_until_complete(connect_server())
-    loop.run_forever()
-
-async def connect_server():
-    websocket = websockets.connect(URI)
-    ws_receive = ThreadingReceive(1, websocket)
-    ws_send = ThreadingSend(2, websocket)
-    ws_receive.start()
-    ws_send.start()
-    return
-
 def cross_road(x, y):
     GAME_DISPLAY.blit(CROSS_ROAD_IMG, (x, y))
 
 def draw_car(x, y):
     GAME_DISPLAY.blit(CAR_IMG, (x, y))
 
-def main():
+async def main():
     global CRASHED
     global NEXT_SPAWN
-
-    t = threading.Thread(target=threading_temp)
-    t.start()
 
     while not CRASHED:
         now = datetime.now()
@@ -88,10 +69,16 @@ def main():
 
         pygame.display.update()
         CLOCK.tick(120)
+
     ThreadingReceive.stop_threads = True
     ThreadingSend.stop_threads = True
     pygame.quit()
     quit()
 
 if __name__ == "__main__":
-    main()
+    ws = create_connection(URI)
+    ws_receive = ThreadingReceive('receive_1', ws)
+    ws_send = ThreadingSend('send_2', ws)
+    ws_receive.start()
+    ws_send.start()
+    asyncio.run(main())
