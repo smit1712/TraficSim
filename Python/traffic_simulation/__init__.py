@@ -14,7 +14,7 @@ LOGGER = logging.getLogger(__name__)
 # endregion
 
 # region Connection settings
-URI = "ws://61c85c95.ngrok.io/"
+URI = "ws://898ee408.ngrok.io"
 # endregion
 
 # region Global vars

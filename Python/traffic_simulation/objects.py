@@ -21,8 +21,11 @@ class Car:
 
         for c in self.TrafficLight.cars:
             if c != self:
-                if self.x in range(c.x - MaxD, c.x + MaxD) and self.y in range(c.y - MaxD, c.y + MaxD):
-                    return
+                if c != self.TrafficLight.cars[0]:
+                    if self.x in range(c.x - MaxD, c.x + MaxD) and self.y in range(c.y - MaxD, c.y + MaxD):
+                        return
+            elif c == self and c == self.TrafficLight.cars[0] : continue
+
         if self.driveIndex == 1 and self.TrafficLight.status != "Green":
             if self.y == self.TrafficLight.route[1][1] and self.x == self.TrafficLight.route[1][0]:
                 return
