@@ -3,7 +3,7 @@ import os, sys
 import pygame
 from datetime import datetime, timedelta
 
-from traffic_simulation.objects import TrafficLight, Car
+from traffic_simulation.objects import TrafficLight, Car, Bike, Pedestrian, Bus
 
 # region Logging
 logging.basicConfig(
@@ -14,12 +14,13 @@ LOGGER = logging.getLogger(__name__)
 # endregion
 
 # region Connection settings
-URI = "ws://898ee408.ngrok.io"
+URI = "ws://localhost:5000"
 # endregion
 
 # region Global vars
 CRASHED = False
 GREEN = (0, 255, 0)
+ORANGE = (255, 140, 0)
 RED = (255, 0, 0)
 
 LIGHTS = [
@@ -52,9 +53,30 @@ LIGHTS = [
                         (548, 609), (572, 713), (572, 886)], (272, 528)),
 ]
 
-CARS = [Car(LIGHTS[0])]
+LIGHTS_BIKE = [
+    TrafficLight('E1', [(27, 532), (272, 528), (520, 523),
+                        (548, 609), (572, 713), (572, 886)], (272, 528))
+]
 
-NEXT_SPAWN = datetime.now() + timedelta(0, 1)
+LIGHTS_PEDESTRIAN = [
+    TrafficLight('E2', [(27, 532), (272, 528), (520, 523),
+                        (548, 609), (572, 713), (572, 886)], (272, 528))
+]
+
+LIGHTS_BUS = [
+    TrafficLight('BB1', [(27, 532), (272, 528), (520, 523),
+                         (548, 609), (572, 713), (572, 886)], (272, 528))
+]
+
+CARS = [Car(LIGHTS[0])]
+BIKES = []
+PEDESTRIANS = []
+BUSES = []
+
+NEXT_SPAWN_CAR = datetime.now() + timedelta(0, 1)
+NEXT_SPAWN_BIKE= datetime.now() + timedelta(0, 1)
+NEXT_SPAWN_PEDESTRIAN = datetime.now() + timedelta(0, 1)
+NEXT_SPAWN_BUS = datetime.now() + timedelta(0, 1)
 NEXT_GREEN = datetime.now() + timedelta(0, 3)
 NEXT_SEND = datetime.now() + timedelta(0, 3)
 # endregion
@@ -68,10 +90,15 @@ display_height = 897
 
 GAME_DISPLAY = pygame.display.set_mode(
     (display_width, display_height), pygame.RESIZABLE)
-pygame.display.set_caption('trafic sim')
+pygame.display.set_caption('traffic simulator')
 
 CLOCK = pygame.time.Clock()
 
 CROSS_ROAD_IMG = pygame.image.load('verkeerslichten.png')
 CAR_IMG = pygame.image.load("car.jpg").convert_alpha()
+BIKE_IMG = pygame.image.load('bike.jpg').convert_alpha()
+PEDESTRIAN_IMG = [pygame.image.load('pedestrian_coffee.jpg').convert_alpha(),
+                  pygame.image.load('pedestrian_dog.jpg').convert_alpha(),
+                  pygame.image.load('pedestrian_female.jpg').convert_alpha()]
+BUS_IMG = pygame.image.load('bus.jpg').convert_alpha()
 # endregion

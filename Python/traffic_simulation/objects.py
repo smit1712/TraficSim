@@ -4,9 +4,12 @@ class TrafficLight:
         self.route = route
         self.status = "Red"
         self.cars = []
+        self.bikes = []
+        self.pedestrians = []
+        self.buses = []
         self.Position = Position
 
-class Car:
+class Car():
     def __init__(self, TrafficLight):
         self.TrafficLight = TrafficLight
         TrafficLight.cars.append(self)
@@ -14,17 +17,18 @@ class Car:
         self.x = TrafficLight.route[0][0]
         self.driveIndex = 0
         self.speed = 1
-        print("New car!")
+        # print("New car!")
 
     def drive(self):
         MaxD = 30
 
         for c in self.TrafficLight.cars:
             if c != self:
-                if c != self.TrafficLight.cars[0]:
-                    if self.x in range(c.x - MaxD, c.x + MaxD) and self.y in range(c.y - MaxD, c.y + MaxD):
-                        return
-            elif c == self and c == self.TrafficLight.cars[0] : continue
+                if c.driveIndex > 2: # tegen collision detectie in bochten
+                    continue
+                if self.x in range(c.x - MaxD, c.x + MaxD) and self.y in range(c.y - MaxD, c.y + MaxD):
+                    return
+            elif c == self and c == self.TrafficLight.cars[0]: continue
 
         if self.driveIndex == 1 and self.TrafficLight.status != "Green":
             if self.y == self.TrafficLight.route[1][1] and self.x == self.TrafficLight.route[1][0]:
@@ -53,6 +57,141 @@ class Car:
     #def __del__(self):
         #print("car destroyed")
 
+class Bike():
+    def __init__(self, TrafficLight):
+        self.TrafficLight = TrafficLight
+        TrafficLight.bikes.append(self)
+        self.y = TrafficLight.route[0][1]
+        self.x = TrafficLight.route[0][0]
+        self.driveIndex = 0
+        self.speed = 1
+
+    def drive(self):
+        MaxD = 10
+
+        for c in self.TrafficLight.bikes:
+            if c != self:
+                if c.driveIndex > 2:  # tegen collision detectie in bochten
+                    continue
+                if self.x in range(c.x - MaxD, c.x + MaxD) and self.y in range(c.y - MaxD, c.y + MaxD):
+                    return
+            elif c == self and c == self.TrafficLight.bikes[0]:
+                continue
+
+        if self.driveIndex == 1 and self.TrafficLight.status != "Green":
+            if self.y == self.TrafficLight.route[1][1] and self.x == self.TrafficLight.route[1][0]:
+                return
+
+        if len(self.TrafficLight.route) == self.driveIndex:
+            del self
+            return
+
+        if self.y == self.TrafficLight.route[self.driveIndex][1] and self.x == self.TrafficLight.route[self.driveIndex][0]:
+            self.driveIndex = self.driveIndex + 1
+
+        if len(self.TrafficLight.route) == self.driveIndex:
+            del self
+            return
+
+        if self.y > self.TrafficLight.route[self.driveIndex][1]:
+            self.y -= self.speed
+        if self.y < self.TrafficLight.route[self.driveIndex][1]:
+            self.y += self.speed
+        if self.x > self.TrafficLight.route[self.driveIndex][0]:
+            self.x -= self.speed
+        if self.x < self.TrafficLight.route[self.driveIndex][0]:
+            self.x += self.speed
+
+class Pedestrian():
+    def __init__(self, TrafficLight):
+        self.TrafficLight = TrafficLight
+        TrafficLight.pedestrians.append(self)
+        self.y = TrafficLight.route[0][1]
+        self.x = TrafficLight.route[0][0]
+        self.driveIndex = 0
+        self.speed = 1
+
+    def drive(self):
+        MaxD = 5
+
+        for c in self.TrafficLight.pedestrians:
+            if c != self:
+                if c.driveIndex > 2:  # tegen collision detectie in bochten
+                    continue
+                if self.x in range(c.x - MaxD, c.x + MaxD) and self.y in range(c.y - MaxD, c.y + MaxD):
+                    return
+            elif c == self and c == self.TrafficLight.pedestrians[0]:
+                continue
+
+        if self.driveIndex == 1 and self.TrafficLight.status != "Green":
+            if self.y == self.TrafficLight.route[1][1] and self.x == self.TrafficLight.route[1][0]:
+                return
+
+        if len(self.TrafficLight.route) == self.driveIndex:
+            del self
+            return
+
+        if self.y == self.TrafficLight.route[self.driveIndex][1] and self.x == self.TrafficLight.route[self.driveIndex][0]:
+            self.driveIndex = self.driveIndex + 1
+
+        if len(self.TrafficLight.route) == self.driveIndex:
+            del self
+            return
+
+        if self.y > self.TrafficLight.route[self.driveIndex][1]:
+            self.y -= self.speed
+        if self.y < self.TrafficLight.route[self.driveIndex][1]:
+            self.y += self.speed
+        if self.x > self.TrafficLight.route[self.driveIndex][0]:
+            self.x -= self.speed
+        if self.x < self.TrafficLight.route[self.driveIndex][0]:
+            self.x += self.speed
+
+
+class Bus():
+    def __init__(self, TrafficLight):
+        self.TrafficLight = TrafficLight
+        TrafficLight.buses.append(self)
+        self.y = TrafficLight.route[0][1]
+        self.x = TrafficLight.route[0][0]
+        self.driveIndex = 0
+        self.speed = 1
+
+    def drive(self):
+        MaxD = 35
+
+        for c in self.TrafficLight.buses:
+            if c != self:
+                if c.driveIndex > 2:  # tegen collision detectie in bochten
+                    continue
+                if self.x in range(c.x - MaxD, c.x + MaxD) and self.y in range(c.y - MaxD, c.y + MaxD):
+                    return
+            elif c == self and c == self.TrafficLight.buses[0]:
+                continue
+
+        if self.driveIndex == 1 and self.TrafficLight.status != "Green":
+            if self.y == self.TrafficLight.route[1][1] and self.x == self.TrafficLight.route[1][0]:
+                return
+
+        if len(self.TrafficLight.route) == self.driveIndex:
+            del self
+            return
+
+        if self.y == self.TrafficLight.route[self.driveIndex][1] and self.x == self.TrafficLight.route[self.driveIndex][0]:
+            self.driveIndex = self.driveIndex + 1
+
+        if len(self.TrafficLight.route) == self.driveIndex:
+            del self
+            return
+
+        if self.y > self.TrafficLight.route[self.driveIndex][1]:
+            self.y -= self.speed
+        if self.y < self.TrafficLight.route[self.driveIndex][1]:
+            self.y += self.speed
+        if self.x > self.TrafficLight.route[self.driveIndex][0]:
+            self.x -= self.speed
+        if self.x < self.TrafficLight.route[self.driveIndex][0]:
+            self.x += self.speed
 
 class TrafficObject:
     def __init__(self, A1, A2, A3, A4, AB1, AB2, B1, B2, B3, B4, B5, BB1, C1, C2, C3, D1, D2, D3, E1, EV1, EV2, EV3, EV4, FF1, FF2, FV1, FV2, FV3, FV4, GF1, GF2, GV1, GV2, GV3, GV4):
