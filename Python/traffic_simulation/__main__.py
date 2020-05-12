@@ -9,7 +9,7 @@ from websocket import create_connection
 from traffic_simulation.connection_classes import ThreadingReceive, ThreadingSend
 from traffic_simulation.objects import TrafficLight, Car, Bike, Pedestrian, Bus
 from traffic_simulation import URI, CRASHED, GAME_DISPLAY, GREEN, ORANGE, RED, CLOCK, CROSS_ROAD_IMG, CAR_IMG, \
-    BIKE_IMG, BUS_IMG, PEDESTRIAN_IMG, LIGHTS, LIGHTS_BIKE, LIGHTS_PEDESTRIAN, LIGHTS_BUS, CARS, BIKES, PEDESTRIANS, BUSES, \
+    BIKE_IMG, BUS_IMG, PEDESTRIAN_IMG,ALL_LIGHTS, LIGHTS, LIGHTS_BIKE, LIGHTS_PEDESTRIAN, LIGHTS_BUS, CARS, BIKES, PEDESTRIANS, BUSES, \
     NEXT_SPAWN_CAR, NEXT_SPAWN_BIKE, NEXT_SPAWN_PEDESTRIAN, NEXT_SPAWN_BUS, NEXT_GREEN, NEXT_SEND
 
 seed(1)
@@ -123,7 +123,7 @@ async def main():
         #     # asyncio.get_event_loop().run_until_complete(websocket_send())
         #     # nextSpawn = datetime.now() + timedelta(seconds=5)
 
-        for l in LIGHTS:
+        for l in ALL_LIGHTS:
             if l.status == "Green":
                 pygame.draw.rect(GAME_DISPLAY, GREEN,
                                  (l.Position[0], l.Position[1], 25, 25), 0)
@@ -143,9 +143,13 @@ async def main():
     quit()
 
 if __name__ == "__main__":
-    ws = create_connection(URI)
-    ws_receive = ThreadingReceive('receive_1', ws)
-    ws_send = ThreadingSend('send_2', ws)
-    ws_receive.start()
-    ws_send.start()
-    asyncio.run(main())
+    try:
+        ws = create_connection(URI)
+        ws_receive = ThreadingReceive('receive_1', ws)
+        ws_send = ThreadingSend('send_2', ws)
+        ws_receive.start()
+        ws_send.start()
+        asyncio.run(main())
+    except:
+        print("This program has crashed, not trying without websocket")
+        asyncio.run(main())

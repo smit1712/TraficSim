@@ -59,5 +59,5 @@ class ThreadingSend(threading.Thread):
                     "GF1": 0, "GF2": 0, "GV1": 0, "GV2": 0, "GV3": 0, "GV4": 0}
             json_dump = json.dumps(data)
             self.ws.send(json_dump)
-            print(f"Send: {json_dump}")
+            # print(f"Send: {json_dump}")
             time.sleep(1)
