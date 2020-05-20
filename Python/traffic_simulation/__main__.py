@@ -1,10 +1,11 @@
-import asyncio
+import asyncio, sys
 import pygame, pyautogui, math
 import threading
 import json
 from datetime import datetime, timedelta
 from random import seed, randint
-from websocket import create_connection
+from websocket import create_connection, WebSocketAddressException
+from pygame.locals import *
 
 from traffic_simulation.connection_classes import ThreadingReceive, ThreadingSend
 from traffic_simulation.objects import TrafficLight, Car, Bike, Pedestrian, Bus
@@ -27,19 +28,23 @@ ENTITY_TYPE = {
 ENTITY_SPAWN = {
     'car': [
         lambda: CARS.append(Car(LIGHTS[randint(0, len(LIGHTS) - 1)])),
-        NEXT_SPAWN_CAR
+        NEXT_SPAWN_CAR,
+        timedelta(seconds=1)
         ],
     'bike': [
         lambda: BIKES.append(Bike(LIGHTS_BIKE[randint(0, len(LIGHTS_BIKE) - 1)])),
-        NEXT_SPAWN_BIKE
+        NEXT_SPAWN_BIKE,
+        timedelta(seconds=10)
         ],
     'pedestrian': [
         lambda: PEDESTRIANS.append(Pedestrian(LIGHTS_PEDESTRIAN[randint(0, len(LIGHTS_PEDESTRIAN) - 1)])),
-        NEXT_SPAWN_PEDESTRIAN
+        NEXT_SPAWN_PEDESTRIAN,
+        timedelta(seconds=30)
         ],
     'bus': [
         lambda: BUSES.append(Bus(LIGHTS_BUS[randint(0, len(LIGHTS_BUS) - 1)])),
-        NEXT_SPAWN_BUS
+        NEXT_SPAWN_BUS,
+        timedelta(seconds=40)
         ]
 }
 
@@ -49,7 +54,7 @@ def draw_entity(x, y, type):
 def spawn_entity(now, type):
     if(now > ENTITY_SPAWN[type][1]):
         ENTITY_SPAWN[type][0]()
-        ENTITY_SPAWN[type][1] = now + timedelta(seconds=3)
+        ENTITY_SPAWN[type][1] = now + ENTITY_SPAWN[type][2]
 
 async def main():
     global CRASHED
@@ -62,6 +67,12 @@ async def main():
                 CRASHED = True
             if event.type == pygame.MOUSEBUTTONDOWN:
                 print(pygame.mouse.get_pos())
+            if event.type == KEYDOWN and event.key == K_ESCAPE:
+                ws_receive.raise_exception()
+                ws_send.raise_exception()
+                ws_receive.join()
+                ws_send.join()
+                sys.exit()
 
         draw_entity(0, 0, 'crossroad')
         x, y = pygame.mouse.get_pos()
@@ -137,10 +148,11 @@ async def main():
         pygame.display.update()
         CLOCK.tick(120)
 
-    ThreadingReceive.stop_threads = True
-    ThreadingSend.stop_threads = True
-    pygame.quit()
-    quit()
+    ws_receive.raise_exception()
+    ws_send.raise_exception()
+    ws_receive.join()
+    ws_send.join()
+    sys.exit()
 
 if __name__ == "__main__":
     try:
@@ -150,6 +162,6 @@ if __name__ == "__main__":
         ws_receive.start()
         ws_send.start()
         asyncio.run(main())
-    except:
+    except WebSocketAddressException:
         print("This program has crashed, not trying without websocket")
         asyncio.run(main())
