@@ -62,6 +62,12 @@ async def main():
                 CRASHED = True
             if event.type == pygame.MOUSEBUTTONDOWN:
                 print(pygame.mouse.get_pos())
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    ThreadingReceive.stop_threads = True
+                    ThreadingSend.stop_threads = True
+                    pygame.quit()
+                    quit()
 
         draw_entity(0, 0, 'crossroad')
         x, y = pygame.mouse.get_pos()
@@ -119,9 +125,9 @@ async def main():
         #     lights[i].status = "Green"
         #     print(lights[i].name)
         #     nextGreen = now + timedelta(seconds=10)
-        # # if(now > nextSend):
-        #     # asyncio.get_event_loop().run_until_complete(websocket_send())
-        #     # nextSpawn = datetime.now() + timedelta(seconds=5)
+        # if(now > nextSend):
+            # asyncio.get_event_loop().run_until_complete(websocket_send())
+            # nextSpawn = datetime.now() + timedelta(seconds=5)
 
         for l in ALL_LIGHTS:
             if l.status == "Green":
