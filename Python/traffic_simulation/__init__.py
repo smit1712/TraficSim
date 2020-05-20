@@ -45,19 +45,21 @@ LIGHTS = [
 
 LIGHTS_BIKE = [
     TrafficLight('E1', [(1135, 240), (727, 237), (437, 239), (411, 194), (408, 9)], (727, 237)),
+    TrafficLight('FF1', [(374, 887), (387, 554),
+                         (388, 430), (382, 307), (391, 13)], (387, 554)),
     TrafficLight('FF2', [(407, 10), (412, 330), (416, 571), (401, 714), (399, 785), (400, 880)], (412, 330)),
-    TrafficLight('GF2', [(393, 892), (455, 659), (784, 657), (1180, 643), (1234, 642)], (455, 659)),
-    TrafficLight('GF1', [(994, 656), (782, 659), (449, 657), (366, 575), (7, 576)], (782, 659)),
-    TrafficLight('FF1', [(374, 887), (387, 554), (388, 430), (382, 307), (391, 13)], (387, 554))
+    TrafficLight('GF1', [(994, 656), (782, 659),
+                         (449, 657), (366, 575), (7, 576)], (782, 659)),
+    TrafficLight('GF2', [(393, 892), (455, 659), (784, 657), (1180, 643), (1234, 642)], (455, 659))
 ]
 
 LIGHTS_PEDESTRIAN = [
     TrafficLight('EV1', [(1111, 203), (728, 211), (629, 212), (448, 217), (408, 211), (406, 11)], (728, 211)),
     TrafficLight('EV4', [(391, 7), (432, 227), (605, 224), (791, 215), (990, 215), (1111, 209), (1212, 203), (1229, 211)], (432, 227)),
-    TrafficLight('FV4', [(390, 10), (386, 328), (387, 435), (379, 553), (355, 613), (259, 604), (146, 604), (8, 608)], (386, 328)),
     TrafficLight('FV1', [(1111, 203), (728, 211), (629, 212), (448, 217), (408, 211), (406, 11)], (728, 211)),
-    TrafficLight('GV2', [(366, 693), (456, 684), (597, 693), (771, 689), (1025, 673), (1228, 676)], (456, 684)),
-    TrafficLight('GV1', [(1149, 671), (784, 679), (617, 670), (459, 671), (373, 671), (371, 851), (369, 886)],  (784, 679))
+    TrafficLight('FV4', [(390, 10), (386, 328), (387, 435), (379, 553), (355, 613), (259, 604), (146, 604), (8, 608)], (386, 328)),
+    TrafficLight('GV1', [(1149, 671), (784, 679), (617, 670), (459, 671), (373, 671), (371, 851), (369, 886)],  (784, 679)),
+    TrafficLight('GV2', [(366, 693), (456, 684), (597, 693), (771, 689), (1025, 673), (1228, 676)], (456, 684))
 ]
 
 LIGHTS_BUS = [
@@ -72,10 +74,10 @@ BIKES = []
 PEDESTRIANS = []
 BUSES = []
 
-NEXT_SPAWN_CAR = datetime.now() + timedelta(0, 1)
-NEXT_SPAWN_BIKE= datetime.now() + timedelta(0, 1)
-NEXT_SPAWN_PEDESTRIAN = datetime.now() + timedelta(0, 1)
-NEXT_SPAWN_BUS = datetime.now() + timedelta(0, 1)
+NEXT_SPAWN_CAR = datetime.now() + timedelta(seconds=1)
+NEXT_SPAWN_BIKE= datetime.now() + timedelta(seconds=10)
+NEXT_SPAWN_PEDESTRIAN = datetime.now() + timedelta(seconds=30)
+NEXT_SPAWN_BUS = datetime.now() + timedelta(seconds=40)
 NEXT_GREEN = datetime.now() + timedelta(0, 3)
 NEXT_SEND = datetime.now() + timedelta(0, 3)
 # endregion
