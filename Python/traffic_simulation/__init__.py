@@ -14,7 +14,7 @@ LOGGER = logging.getLogger(__name__)
 # endregion
 
 # region Connection settings
-URI = "ws://trafic.azurewebsites.net/controller"
+URI = "ws://1e004053.ngrok.io"
 # endregion
 
 # region Global vars
@@ -24,10 +24,7 @@ ORANGE = (255, 140, 0)
 RED = (255, 0, 0)
 
 LIGHTS = [
-    TrafficLight("A1", [(637, 885), (633, 596), (608, 452), 
-                        (546, 411), (467, 398), (399, 400),
-                        (289, 402), (209, 402), (120, 395), 
-                        (9, 404)], (633, 596)),
+    TrafficLight("A1", [(647, 615),  (632, 596),  (403, 406),  (36, 402)], (632, 596)),
     TrafficLight("A2", [(672, 891), (659, 596), (649, 9)], (659, 596)),
     TrafficLight("A3", [(699, 891), (689, 596), (683, 13)], (689, 596)),
     TrafficLight("A4", [(720, 889), (715, 596), (738, 529), (831, 495), (940, 488), (1067, 485), (1217, 475)], (715, 596)),
@@ -74,7 +71,7 @@ BIKES = []
 PEDESTRIANS = []
 BUSES = []
 
-NEXT_SPAWN_CAR = datetime.now() + timedelta(seconds=1)
+NEXT_SPAWN_CAR = datetime.now() + timedelta(seconds=5)
 NEXT_SPAWN_BIKE= datetime.now() + timedelta(seconds=10)
 NEXT_SPAWN_PEDESTRIAN = datetime.now() + timedelta(seconds=30)
 NEXT_SPAWN_BUS = datetime.now() + timedelta(seconds=40)

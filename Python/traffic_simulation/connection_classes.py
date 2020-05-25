@@ -3,7 +3,7 @@ import asyncio
 import json
 import time
 import ctypes
-from traffic_simulation import URI, LIGHTS, LIGHTS_BIKE, LIGHTS_PEDESTRIAN, LIGHTS_BUS
+from traffic_simulation import URI, LIGHTS, LIGHTS_BIKE, LIGHTS_PEDESTRIAN, LIGHTS_BUS, ALL_LIGHTS
 
 class ThreadingReceive(threading.Thread):
     def __init__(self, thread_id, websocket):
@@ -23,7 +23,7 @@ class ThreadingReceive(threading.Thread):
         while(True):
             data = self.ws.recv()
             js = json.loads(data)
-            for l in LIGHTS:
+            for l in ALL_LIGHTS:
                 status = js[l.name]
                 if status == 2:
                     l.status = "Green"
