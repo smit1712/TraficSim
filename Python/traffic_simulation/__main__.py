@@ -1,4 +1,4 @@
-import asyncio, sys
+import asyncio, sys, os
 import pygame, pyautogui, math
 import threading
 import json
@@ -11,9 +11,11 @@ from traffic_simulation.connection_classes import ThreadingReceive, ThreadingSen
 from traffic_simulation.objects import TrafficLight, Car, Bike, Pedestrian, Bus
 from traffic_simulation import URI, CRASHED, GAME_DISPLAY, GREEN, ORANGE, RED, CLOCK, CROSS_ROAD_IMG, CAR_IMG, \
     BIKE_IMG, BUS_IMG, PEDESTRIAN_IMG,ALL_LIGHTS, LIGHTS, LIGHTS_BIKE, LIGHTS_PEDESTRIAN, LIGHTS_BUS, CARS, BIKES, PEDESTRIANS, BUSES, \
-    NEXT_SPAWN_CAR, NEXT_SPAWN_BIKE, NEXT_SPAWN_PEDESTRIAN, NEXT_SPAWN_BUS, NEXT_GREEN, NEXT_SEND
+    NEXT_SPAWN_CAR, NEXT_SPAWN_BIKE, NEXT_SPAWN_PEDESTRIAN, NEXT_SPAWN_BUS, NEXT_GREEN, NEXT_SEND, ALL_Vehicles
 
 seed(1)
+
+SPAWN = True
 
 TYPES = ['car', 'bike', 'pedestrian', 'bus']
 
@@ -29,22 +31,26 @@ ENTITY_SPAWN = {
     'car': [
         lambda: CARS.append(Car(LIGHTS[randint(0, len(LIGHTS) - 1)])),
         NEXT_SPAWN_CAR,
-        timedelta(seconds=1)
+        timedelta(seconds=1),
+        CARS
         ],
     'bike': [
         lambda: BIKES.append(Bike(LIGHTS_BIKE[randint(0, len(LIGHTS_BIKE) - 1)])),
         NEXT_SPAWN_BIKE,
-        timedelta(seconds=10)
+        timedelta(seconds=10),
+        BIKES
         ],
     'pedestrian': [
         lambda: PEDESTRIANS.append(Pedestrian(LIGHTS_PEDESTRIAN[randint(0, len(LIGHTS_PEDESTRIAN) - 1)])),
         NEXT_SPAWN_PEDESTRIAN,
-        timedelta(seconds=30)
+        timedelta(seconds=30),
+        PEDESTRIANS
         ],
     'bus': [
         lambda: BUSES.append(Bus(LIGHTS_BUS[randint(0, len(LIGHTS_BUS) - 1)])),
         NEXT_SPAWN_BUS,
-        timedelta(seconds=40)
+        timedelta(seconds=40),
+        BUSES
         ]
 }
 
@@ -52,13 +58,15 @@ def draw_entity(x, y, type):
     GAME_DISPLAY.blit(ENTITY_TYPE[type], (x, y))
 
 def spawn_entity(now, type):
-    if(now > ENTITY_SPAWN[type][1]):
-        ENTITY_SPAWN[type][0]()
-        ENTITY_SPAWN[type][1] = now + ENTITY_SPAWN[type][2]
+    if SPAWN:
+        if(now > ENTITY_SPAWN[type][1]):
+            ENTITY_SPAWN[type][0]()
+            ENTITY_SPAWN[type][1] = now + ENTITY_SPAWN[type][2]
 
 async def main():
     global CRASHED
     global NEXT_SPAWN_CAR
+    global SPAWN
 
     while not CRASHED:
         now = datetime.now()
@@ -73,6 +81,10 @@ async def main():
                 ws_receive.join()
                 ws_send.join()
                 sys.exit()
+            if event.type == KEYDOWN and event.key == K_c:
+                os.system('cls')
+            if event.type == KEYDOWN and event.key == K_s:
+                SPAWN = False            
 
         draw_entity(0, 0, 'crossroad')
         x, y = pygame.mouse.get_pos()
@@ -92,7 +104,10 @@ async def main():
                 # print(f"Drive index: {c.driveIndex} Trafficlight route: {len(c.TrafficLight.route)}")
                 if b.driveIndex == len(b.TrafficLight.route):
                     BIKES.remove(b)
-                    b.TrafficLight.bikes.remove(b)
+                    try:
+                        b.TrafficLight.bikes.remove(b)
+                    except ValueError:
+                        Nothing = True
                     del b
                     break
                 b.drive()

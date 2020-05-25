@@ -31,7 +31,7 @@ class ThreadingReceive(threading.Thread):
                     l.status = "Orange"
                 else:
                     l.status = "Red"
-            print(f"Received: {data}")
+            # print(f"Received: {data}")
         self.ws.close()
         print("websocketclosed")
     
