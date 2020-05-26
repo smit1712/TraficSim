@@ -115,13 +115,14 @@ class Bike():
                         self.isWaiting = False
         except IndexError:
             DontUseException = True
+        try:
+            if self.TrafficLight.bikes[0] == self and self.driveIndex == 1 and self.TrafficLight.status != "Green":
+                distance = calculateDistance(self.x, self.y, self.TrafficLight.route[1][0],self.TrafficLight.route[1][1])
 
-        if self.TrafficLight.bikes[0] == self and self.driveIndex == 1 and self.TrafficLight.status != "Green":
-            distance = calculateDistance(self.x, self.y, self.TrafficLight.route[1][0],self.TrafficLight.route[1][1])
-
-            if distance < 10:
-                self.isWaiting = True
-
+                if distance < 10:
+                    self.isWaiting = True
+        except IndexError:
+            DontUseException = True  
         if self.driveIndex >= 1 and self.TrafficLight.status == "Green":
             self.isWaiting = False                
 
@@ -129,9 +130,13 @@ class Bike():
             self.driveIndex = self.driveIndex + 1
 
         if len(self.TrafficLight.route) == self.driveIndex:
-            self.TrafficLight.bikes.remove(self)
-            self.TrafficLight.nextTraficLight.append(self)
-            del self
+            if self.TrafficLight.nextTraficLight != []:
+                self.TrafficLight.bikes.remove(self)
+                self.TrafficLight.nextTraficLight.bikes.append(self)
+                self.TrafficLight = self.TrafficLight.nextTraficLight
+                self.driveIndex = 0
+            else:
+                del self
             return
         if self.isWaiting == True:
              return
@@ -178,12 +183,14 @@ class Pedestrian():
                         self.isWaiting = False
         except IndexError:
             DontUseException = True
-            
-        if self.TrafficLight.pedestrians[0] == self and self.driveIndex == 1 and self.TrafficLight.status != "Green":
-            distance = calculateDistance(self.x, self.y, self.TrafficLight.route[1][0],self.TrafficLight.route[1][1])
+        try:
+            if self.TrafficLight.pedestrians[0] == self and self.driveIndex == 1 and self.TrafficLight.status != "Green":
+                distance = calculateDistance(self.x, self.y, self.TrafficLight.route[1][0],self.TrafficLight.route[1][1])
 
-            if distance < 10:
-                self.isWaiting = True
+                if distance < 10:
+                    self.isWaiting = True
+        except IndexError:
+            DontUseException = True  
 
         if self.driveIndex >= 1 and self.TrafficLight.status == "Green":
             self.isWaiting = False
@@ -192,7 +199,14 @@ class Pedestrian():
             self.driveIndex = self.driveIndex + 1
 
         if len(self.TrafficLight.route) == self.driveIndex:
-            del self
+            if self.TrafficLight.nextTraficLight != []:
+                self.TrafficLight.pedestrians.remove(self)
+                self.TrafficLight.nextTraficLight.pedestrians.append(self)
+                self.TrafficLight = self.TrafficLight.nextTraficLight
+
+                self.driveIndex = 0
+            else:
+                del self
             return
         if self.isWaiting == True:
              return

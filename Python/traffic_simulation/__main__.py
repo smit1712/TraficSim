@@ -31,28 +31,38 @@ ENTITY_SPAWN = {
     'car': [
         lambda: CARS.append(Car(LIGHTS[randint(0, len(LIGHTS) - 1)])),
         NEXT_SPAWN_CAR,
-        timedelta(seconds=1),
+        timedelta(seconds=10),
         CARS
         ],
     'bike': [
         lambda: BIKES.append(Bike(LIGHTS_BIKE[randint(0, len(LIGHTS_BIKE) - 1)])),
         NEXT_SPAWN_BIKE,
-        timedelta(seconds=10),
+        timedelta(seconds=5),
         BIKES
         ],
     'pedestrian': [
         lambda: PEDESTRIANS.append(Pedestrian(LIGHTS_PEDESTRIAN[randint(0, len(LIGHTS_PEDESTRIAN) - 1)])),
         NEXT_SPAWN_PEDESTRIAN,
-        timedelta(seconds=30),
+        timedelta(seconds=5),
         PEDESTRIANS
         ],
     'bus': [
         lambda: BUSES.append(Bus(LIGHTS_BUS[randint(0, len(LIGHTS_BUS) - 1)])),
         NEXT_SPAWN_BUS,
-        timedelta(seconds=40),
+        timedelta(seconds=50),
         BUSES
         ]
 }
+
+LIGHT_COLOR = {
+    'Green': GREEN,
+    'Orange': ORANGE,
+    'Red': RED
+}
+
+def draw_light(light, color):
+    pygame.draw.rect(GAME_DISPLAY, LIGHT_COLOR[color],
+        (light.Position[0], light.Position[1], 25, 25), 0)
 
 def draw_entity(x, y, type):
     GAME_DISPLAY.blit(ENTITY_TYPE[type], (x, y))
@@ -89,6 +99,22 @@ async def main():
         draw_entity(0, 0, 'crossroad')
         x, y = pygame.mouse.get_pos()
 
+        for l in ALL_LIGHTS:
+            if l.nextTraficLight != []:
+                if l.nextTraficLight.status == "Green":
+                    draw_light(l.nextTraficLight, l.nextTraficLight.status)
+                if l.nextTraficLight.status == "Orange":
+                    draw_light(l.nextTraficLight, l.nextTraficLight.status)
+                if l.nextTraficLight.status == "Red":
+                    draw_light(l.nextTraficLight, l.nextTraficLight.status)
+
+            if l.status == "Green":
+                draw_light(l, l.status)
+            if l.status == "Orange":
+                draw_light(l, l.status)
+            if l.status == "Red":
+                draw_light(l, l.status)
+
         for c in CARS:
             # print(f"Drive index: {c.driveIndex} Trafficlight route: {len(c.TrafficLight.route)}")
             if c.driveIndex == len(c.TrafficLight.route):
@@ -118,7 +144,10 @@ async def main():
                 # print(f"Drive index: {c.driveIndex} Trafficlight route: {len(c.TrafficLight.route)}")
                 if p.driveIndex == len(p.TrafficLight.route):
                     PEDESTRIANS.remove(p)
-                    p.TrafficLight.pedestrians.remove(p)
+                    try:
+                        p.TrafficLight.pedestrians.remove(p)
+                    except ValueError:
+                        Nothing = True
                     del p
                     break
                 p.drive()
@@ -148,17 +177,6 @@ async def main():
         # if(now > nextSend):
             # asyncio.get_event_loop().run_until_complete(websocket_send())
             # nextSpawn = datetime.now() + timedelta(seconds=5)
-
-        for l in ALL_LIGHTS:
-            if l.status == "Green":
-                pygame.draw.rect(GAME_DISPLAY, GREEN,
-                                 (l.Position[0], l.Position[1], 25, 25), 0)
-            if l.status == "Orange":
-                pygame.draw.rect(GAME_DISPLAY, ORANGE,
-                                 (l.Position[0], l.Position[1], 25, 25), 0)
-            if l.status == "Red":
-                pygame.draw.rect(GAME_DISPLAY, RED,
-                                 (l.Position[0], l.Position[1], 25, 25), 0)
 
         pygame.display.update()
         CLOCK.tick(120)
