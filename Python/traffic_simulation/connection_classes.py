@@ -80,9 +80,9 @@ class ThreadingSend(threading.Thread):
                     "C1":  len(LIGHTS[9].cars), "C2": len(LIGHTS[10].cars), "C3": len(LIGHTS[11].cars), "D1": len(LIGHTS[12].cars), "D2": len(LIGHTS[13].cars), "D3": len(LIGHTS[14].cars),
                     "E1": len(LIGHTS_BIKE[0].bikes), "EV1": len(LIGHTS_PEDESTRIAN[0].pedestrians), "EV2": len(LIGHTS_PEDESTRIAN[0].nextTraficLight.pedestrians), 
                     "EV3": len(LIGHTS_PEDESTRIAN[1].nextTraficLight.pedestrians), "EV4": len(LIGHTS_PEDESTRIAN[1].pedestrians),
-                    "FF1": len(LIGHTS_BIKE[1].bikes), "FF2": len(LIGHTS_BIKE[2].bikes), "FV1": len(LIGHTS_PEDESTRIAN[2].pedestrians), "FV2": 0, "FV3": 0,
+                    "FF1": len(LIGHTS_BIKE[1].bikes), "FF2": len(LIGHTS_BIKE[2].bikes), "FV1": len(LIGHTS_PEDESTRIAN[2].pedestrians), "FV2":len(LIGHTS_PEDESTRIAN[2].nextTraficLight.pedestrians), "FV3":len(LIGHTS_PEDESTRIAN[3].nextTraficLight.pedestrians),
                     "FV4": len(LIGHTS_PEDESTRIAN[3].pedestrians), "GF1": len(LIGHTS_BIKE[3].bikes), "GF2": len(LIGHTS_BIKE[4].bikes),
-                    "GV1": len(LIGHTS_PEDESTRIAN[4].pedestrians), "GV2": len(LIGHTS_PEDESTRIAN[4].nextTraficLight.pedestrians), "GV3": 0, "GV4": 0}
+                    "GV1": len(LIGHTS_PEDESTRIAN[4].pedestrians), "GV2": len(LIGHTS_PEDESTRIAN[4].nextTraficLight.pedestrians), "GV3": len(LIGHTS_PEDESTRIAN[5].nextTraficLight.pedestrians), "GV4":len(LIGHTS_PEDESTRIAN[5].pedestrians)}
             json_dump = json.dumps(data)
             self.ws.send(json_dump)
             #print(f"Send: {json_dump}")

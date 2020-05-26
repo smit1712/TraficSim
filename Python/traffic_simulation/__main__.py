@@ -31,25 +31,25 @@ ENTITY_SPAWN = {
     'car': [
         lambda: CARS.append(Car(LIGHTS[randint(0, len(LIGHTS) - 1)])),
         NEXT_SPAWN_CAR,
-        timedelta(seconds=10),
+        timedelta(seconds=7),
         CARS
         ],
     'bike': [
         lambda: BIKES.append(Bike(LIGHTS_BIKE[randint(0, len(LIGHTS_BIKE) - 1)])),
         NEXT_SPAWN_BIKE,
-        timedelta(seconds=5),
+        timedelta(seconds=25),
         BIKES
         ],
     'pedestrian': [
         lambda: PEDESTRIANS.append(Pedestrian(LIGHTS_PEDESTRIAN[randint(0, len(LIGHTS_PEDESTRIAN) - 1)])),
         NEXT_SPAWN_PEDESTRIAN,
-        timedelta(seconds=5),
+        timedelta(seconds=25),
         PEDESTRIANS
         ],
     'bus': [
         lambda: BUSES.append(Bus(LIGHTS_BUS[randint(0, len(LIGHTS_BUS) - 1)])),
         NEXT_SPAWN_BUS,
-        timedelta(seconds=50),
+        timedelta(seconds=60),
         BUSES
         ]
 }
