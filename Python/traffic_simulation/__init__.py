@@ -1,9 +1,11 @@
+# region import
 import logging
 import os, sys
 import pygame
 from datetime import datetime, timedelta
 
 from traffic_simulation.objects import TrafficLight, Car, Bike, Pedestrian, Bus
+# endregion
 
 # region Logging
 logging.basicConfig(
@@ -14,7 +16,7 @@ LOGGER = logging.getLogger(__name__)
 # endregion
 
 # region Connection settings
-URI = "ws://LOCALHOST:5000"
+URI = "ws://localhost:5000"
 # endregion
 
 # region Global vars
@@ -50,16 +52,16 @@ LIGHTS_BIKE = [
     TrafficLight('GF1', [(1230, 642), (772, 645), (613, 647), (385, 651), (390, 888)], (613, 647)),
     TrafficLight('GF2', [(369, 892), (463, 648), (566, 647), (1229, 645)],(566, 647))
 ]
-    
+
 LIGHTS_PEDESTRIAN = [
     TrafficLight('EV1', [(410, 4), (442, 215), (617, 210)],  (617, 210),
-        TrafficLight('EV2', [(617, 210),(702, 208),(1231, 210)], (702, 208))),    
+        TrafficLight('EV2', [(617, 210),(702, 208),(1231, 210)], (702, 208))),
     TrafficLight('EV4', [(1223, 209), (702, 206), (641, 208)], (641, 208),
         TrafficLight('EV3', [(641, 208), (450, 213), (402, 211), (401, 8)],(402, 211))),
-    TrafficLight('FV1', [(388, 894), (373, 558), (373, 448)], (373, 448),      
+    TrafficLight('FV1', [(388, 894), (373, 558), (373, 448)], (373, 448),
         TrafficLight('FV2', [(373, 448),(376, 419), (374, 369), (387, 1)], (374, 369))),
 
-    TrafficLight('FV4', [(383, 4), (373, 321), (375, 417)], (375, 417),      
+    TrafficLight('FV4', [(383, 4), (373, 321), (375, 417)], (375, 417),
         TrafficLight('FV3', [(375, 417),(374, 451), (373, 537), (347, 575), (5, 579)], (373, 537))),    TrafficLight('GV1', [(1228, 673), (774, 675), (613, 675)], (613, 675),
         TrafficLight('GV2', [(613, 675), (486, 679), (422, 682), (359, 680), (350, 610), (6, 610)], (485, 688))),
     TrafficLight('GV4', [(376, 892), (442, 676), (562, 678)], (562, 678),
@@ -91,13 +93,11 @@ NEXT_SEND = datetime.now() + timedelta(0, 3)
 
 # region Pygame settings
 pygame.init()
-pygame.display.set_mode
 
 display_width = 1238
 display_height = 897
 
-GAME_DISPLAY = pygame.display.set_mode(
-    (display_width, display_height), pygame.RESIZABLE)
+GAME_DISPLAY = pygame.display.set_mode((display_width, display_height), pygame.RESIZABLE)
 pygame.display.set_caption('traffic simulator')
 
 CLOCK = pygame.time.Clock()

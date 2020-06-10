@@ -1,3 +1,4 @@
+# region Imports
 import asyncio, sys, os
 import pygame, pyautogui, math
 import threading
@@ -12,13 +13,16 @@ from traffic_simulation.objects import TrafficLight, Car, Bike, Pedestrian, Bus
 from traffic_simulation import URI, CRASHED, GAME_DISPLAY, GREEN, ORANGE, RED, CLOCK, CROSS_ROAD_IMG, CAR_IMG, \
     BIKE_IMG, BUS_IMG, PEDESTRIAN_IMG,ALL_LIGHTS, LIGHTS, LIGHTS_BIKE, LIGHTS_PEDESTRIAN, LIGHTS_BUS, CARS, BIKES, PEDESTRIANS, BUSES, \
     NEXT_SPAWN_CAR, NEXT_SPAWN_BIKE, NEXT_SPAWN_PEDESTRIAN, NEXT_SPAWN_BUS, NEXT_GREEN, NEXT_SEND, ALL_Vehicles
+# endregion
 
-seed(1)
+# region Initialize variables
+seed(1) # Randomization seed for spawning entities
 
-SPAWN = True
+SPAWN = True # Set to False to stop spawning
 
 TYPES = ['car', 'bike', 'pedestrian', 'bus']
 
+# Maps the images to the entities
 ENTITY_TYPE = {
     'car': CAR_IMG,
     'bike': BIKE_IMG,
@@ -27,52 +31,57 @@ ENTITY_TYPE = {
     'crossroad': CROSS_ROAD_IMG
 }
 
+# Basic configuration for entity spawning
 ENTITY_SPAWN = {
     'car': [
-        lambda: CARS.append(Car(LIGHTS[randint(0, len(LIGHTS) - 1)])),
-        NEXT_SPAWN_CAR,
-        timedelta(seconds=7),
-        CARS
+        lambda: CARS.append(Car(LIGHTS[randint(0, len(LIGHTS) - 1)])), # Add new spawned cars to the trafficlight
+        NEXT_SPAWN_CAR, # Start time to spawn
+        timedelta(seconds=7) # Interval to spawn next
         ],
     'bike': [
         lambda: BIKES.append(Bike(LIGHTS_BIKE[randint(0, len(LIGHTS_BIKE) - 1)])),
         NEXT_SPAWN_BIKE,
-        timedelta(seconds=25),
-        BIKES
+        timedelta(seconds=25)
         ],
     'pedestrian': [
         lambda: PEDESTRIANS.append(Pedestrian(LIGHTS_PEDESTRIAN[randint(0, len(LIGHTS_PEDESTRIAN) - 1)])),
         NEXT_SPAWN_PEDESTRIAN,
-        timedelta(seconds=25),
-        PEDESTRIANS
+        timedelta(seconds=25)
         ],
     'bus': [
         lambda: BUSES.append(Bus(LIGHTS_BUS[randint(0, len(LIGHTS_BUS) - 1)])),
         NEXT_SPAWN_BUS,
-        timedelta(seconds=60),
-        BUSES
+        timedelta(seconds=60)
         ]
 }
 
+# Maps light state to color
 LIGHT_COLOR = {
     'Green': GREEN,
     'Orange': ORANGE,
     'Red': RED
 }
+# endregion
 
+# region draw
 def draw_light(light, color):
     pygame.draw.rect(GAME_DISPLAY, LIGHT_COLOR[color],
         (light.Position[0], light.Position[1], 25, 25), 0)
 
 def draw_entity(x, y, type):
     GAME_DISPLAY.blit(ENTITY_TYPE[type], (x, y))
+# endregion
 
+# region spawn
+# Create new entity for the given type
 def spawn_entity(now, type):
     if SPAWN:
         if(now > ENTITY_SPAWN[type][1]):
             ENTITY_SPAWN[type][0]()
             ENTITY_SPAWN[type][1] = now + ENTITY_SPAWN[type][2]
+# endregion
 
+# region mainloop
 async def main():
     global CRASHED
     global NEXT_SPAWN_CAR
@@ -80,11 +89,11 @@ async def main():
 
     while not CRASHED:
         now = datetime.now()
-        for event in pygame.event.get():
+        for event in pygame.event.get(): # Handle user input
             if event.type == pygame.QUIT:
                 CRASHED = True
             if event.type == pygame.MOUSEBUTTONDOWN:
-                print(pygame.mouse.get_pos())
+                print(pygame.mouse.get_pos())  # Get mouse pointer location
             if event.type == KEYDOWN and event.key == K_ESCAPE:
                 ws_receive.raise_exception()
                 ws_send.raise_exception()
@@ -94,12 +103,13 @@ async def main():
             if event.type == KEYDOWN and event.key == K_c:
                 os.system('cls')
             if event.type == KEYDOWN and event.key == K_s:
-                SPAWN = False            
+                SPAWN = False
+            if event.type == KEYDOWN and event.key == K_d:
+                SPAWN = True
 
-        draw_entity(0, 0, 'crossroad')
-        x, y = pygame.mouse.get_pos()
+        draw_entity(0, 0, 'crossroad') # Draw map
 
-        for l in ALL_LIGHTS:
+        for l in ALL_LIGHTS: # Set light status
             if l.nextTraficLight != []:
                 if l.nextTraficLight.status == "Green":
                     draw_light(l.nextTraficLight, l.nextTraficLight.status)
@@ -115,25 +125,23 @@ async def main():
             if l.status == "Red":
                 draw_light(l, l.status)
 
-        for c in CARS:
-            # print(f"Drive index: {c.driveIndex} Trafficlight route: {len(c.TrafficLight.route)}")
-            if c.driveIndex == len(c.TrafficLight.route):
+        for c in CARS: # Update car position
+            if c.driveIndex == len(c.TrafficLight.route): # If destination reached
                 CARS.remove(c)
-                c.TrafficLight.cars.remove(c)
-                del c
+                c.TrafficLight.cars.remove(c) # Remove from the list
+                del c # Delete object
                 break
             c.drive()
             draw_entity(c.x, c.y, 'car')
 
         if BIKES != None:
             for b in BIKES:
-                # print(f"Drive index: {c.driveIndex} Trafficlight route: {len(c.TrafficLight.route)}")
                 if b.driveIndex == len(b.TrafficLight.route):
                     BIKES.remove(b)
                     try:
                         b.TrafficLight.bikes.remove(b)
                     except ValueError:
-                        Nothing = True
+                        Nothing = True # Everything is permitted
                     del b
                     break
                 b.drive()
@@ -141,7 +149,6 @@ async def main():
 
         if PEDESTRIANS != None:
             for p in PEDESTRIANS:
-                # print(f"Drive index: {c.driveIndex} Trafficlight route: {len(c.TrafficLight.route)}")
                 if p.driveIndex == len(p.TrafficLight.route):
                     PEDESTRIANS.remove(p)
                     try:
@@ -155,7 +162,6 @@ async def main():
 
         if BUSES != None:
             for b in BUSES:
-                # print(f"Drive index: {c.driveIndex} Trafficlight route: {len(c.TrafficLight.route)}")
                 if b.driveIndex == len(b.TrafficLight.route):
                     BUSES.remove(b)
                     b.TrafficLight.buses.remove(b)
@@ -164,29 +170,21 @@ async def main():
                 b.drive()
                 draw_entity(b.x, b.y, 'bus')
 
-        for x in range(0, 4):
-            spawn_entity(now, TYPES[x])
+        for x in range(0, len(TYPES)): # Cycle through entities
+            spawn_entity(now, TYPES[x-1])
 
-        # if(now > nextGreen):
-        #     i = randint(0, len(lights) -1)
-        #     for l in lights:
-        #         l.status = "Red"
-        #     lights[i].status = "Green"
-        #     print(lights[i].name)
-        #     nextGreen = now + timedelta(seconds=10)
-        # if(now > nextSend):
-            # asyncio.get_event_loop().run_until_complete(websocket_send())
-            # nextSpawn = datetime.now() + timedelta(seconds=5)
-
-        pygame.display.update()
+        pygame.display.update() # Update screen
         CLOCK.tick(120)
 
+    # Handles shutting down application
     ws_receive.raise_exception()
     ws_send.raise_exception()
     ws_receive.join()
     ws_send.join()
     sys.exit()
+# endregion
 
+# region initialize
 if __name__ == "__main__":
     try:
         ws = create_connection(URI)
@@ -196,5 +194,9 @@ if __name__ == "__main__":
         ws_send.start()
         asyncio.run(main())
     except WebSocketAddressException:
-        print("This program has crashed, not trying without websocket")
+        print("No websocket connection, now trying without websocket.")
         asyncio.run(main())
+    except ConnectionRefusedError:
+        print("Connection refused, now trying without connection.")
+        asyncio.run(main())
+# endregion
