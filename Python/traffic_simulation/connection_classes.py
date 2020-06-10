@@ -77,14 +77,14 @@ class ThreadingSend(threading.Thread):
     async def websocket_send(self):
         while(True): # Gathers all trafficlights and their traffic
             data = {
-                "A1": len(LIGHTS[0].cars), "A2": len(LIGHTS[1].cars), "A3": len(LIGHTS[2].cars), "A4": len(LIGHTS[3].cars), "AB1": len(LIGHTS_BUS[0].buses), "AB2": len(LIGHTS_BUS[1].buses),
-                "B1": len(LIGHTS[4].cars), "B2": len(LIGHTS[5].cars), "B3": len(LIGHTS[6].cars), "B4": len(LIGHTS[7].cars), "B5": len(LIGHTS[8].cars), "BB1": len(LIGHTS_BUS[2].buses),
-                "C1":  len(LIGHTS[9].cars), "C2": len(LIGHTS[10].cars), "C3": len(LIGHTS[11].cars), "D1": len(LIGHTS[12].cars), "D2": len(LIGHTS[13].cars), "D3": len(LIGHTS[14].cars),
-                "E1": len(LIGHTS_BIKE[0].bikes), "EV1": len(LIGHTS_PEDESTRIAN[0].pedestrians), "EV2": len(LIGHTS_PEDESTRIAN[0].nextTraficLight.pedestrians), 
-                "EV3": len(LIGHTS_PEDESTRIAN[1].nextTraficLight.pedestrians), "EV4": len(LIGHTS_PEDESTRIAN[1].pedestrians),
-                "FF1": len(LIGHTS_BIKE[1].bikes), "FF2": len(LIGHTS_BIKE[2].bikes), "FV1": len(LIGHTS_PEDESTRIAN[2].pedestrians), "FV2":len(LIGHTS_PEDESTRIAN[2].nextTraficLight.pedestrians), "FV3":len(LIGHTS_PEDESTRIAN[3].nextTraficLight.pedestrians),
-                "FV4": len(LIGHTS_PEDESTRIAN[3].pedestrians), "GF1": len(LIGHTS_BIKE[3].bikes), "GF2": len(LIGHTS_BIKE[4].bikes),
-                "GV1": len(LIGHTS_PEDESTRIAN[4].pedestrians), "GV2": len(LIGHTS_PEDESTRIAN[4].nextTraficLight.pedestrians), "GV3": len(LIGHTS_PEDESTRIAN[5].nextTraficLight.pedestrians), "GV4":len(LIGHTS_PEDESTRIAN[5].pedestrians)
+                "A1": len(LIGHTS[0].vehicles), "A2": len(LIGHTS[1].vehicles), "A3": len(LIGHTS[2].vehicles), "A4": len(LIGHTS[3].vehicles), "AB1": len(LIGHTS_BUS[0].vehicles), "AB2": len(LIGHTS_BUS[1].vehicles),
+                "B1": len(LIGHTS[4].vehicles), "B2": len(LIGHTS[5].vehicles), "B3": len(LIGHTS[6].vehicles), "B4": len(LIGHTS[7].vehicles), "B5": len(LIGHTS[8].vehicles), "BB1": len(LIGHTS_BUS[2].vehicles),
+                "C1":  len(LIGHTS[9].vehicles), "C2": len(LIGHTS[10].vehicles), "C3": len(LIGHTS[11].vehicles), "D1": len(LIGHTS[12].vehicles), "D2": len(LIGHTS[13].vehicles), "D3": len(LIGHTS[14].vehicles),
+                "E1": len(LIGHTS_BIKE[0].vehicles), "EV1": len(LIGHTS_PEDESTRIAN[0].vehicles), "EV2": len(LIGHTS_PEDESTRIAN[0].nextTraficLight.pedestrians), 
+                "EV3": len(LIGHTS_PEDESTRIAN[1].nextTraficLight.pedestrians), "EV4": len(LIGHTS_PEDESTRIAN[1].vehicles),
+                "FF1": len(LIGHTS_BIKE[1].vehicles), "FF2": len(LIGHTS_BIKE[2].vehicles), "FV1": len(LIGHTS_PEDESTRIAN[2].vehicles), "FV2":len(LIGHTS_PEDESTRIAN[2].nextTraficLight.pedestrians), "FV3":len(LIGHTS_PEDESTRIAN[3].nextTraficLight.pedestrians),
+                "FV4": len(LIGHTS_PEDESTRIAN[3].vehicles), "GF1": len(LIGHTS_BIKE[3].vehicles), "GF2": len(LIGHTS_BIKE[4].vehicles),
+                "GV1": len(LIGHTS_PEDESTRIAN[4].vehicles), "GV2": len(LIGHTS_PEDESTRIAN[4].nextTraficLight.pedestrians), "GV3": len(LIGHTS_PEDESTRIAN[5].nextTraficLight.pedestrians), "GV4":len(LIGHTS_PEDESTRIAN[5].vehicles)
                 }
             json_dump = json.dumps(data)
             self.ws.send(json_dump)

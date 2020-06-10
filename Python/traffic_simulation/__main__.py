@@ -12,7 +12,7 @@ from traffic_simulation.connection_classes import ThreadingReceive, ThreadingSen
 from traffic_simulation.objects import TrafficLight, Car, Bike, Pedestrian, Bus
 from traffic_simulation import URI, CRASHED, GAME_DISPLAY, GREEN, ORANGE, RED, CLOCK, CROSS_ROAD_IMG, CAR_IMG, \
     BIKE_IMG, BUS_IMG, PEDESTRIAN_IMG,ALL_LIGHTS, LIGHTS, LIGHTS_BIKE, LIGHTS_PEDESTRIAN, LIGHTS_BUS, CARS, BIKES, PEDESTRIANS, BUSES, \
-    NEXT_SPAWN_CAR, NEXT_SPAWN_BIKE, NEXT_SPAWN_PEDESTRIAN, NEXT_SPAWN_BUS, NEXT_GREEN, NEXT_SEND, ALL_Vehicles
+    NEXT_SPAWN_CAR, NEXT_SPAWN_BIKE, NEXT_SPAWN_PEDESTRIAN, NEXT_SPAWN_BUS, ALL_Vehicles
 # endregion
 
 # region Initialize variables
@@ -128,7 +128,7 @@ async def main():
         for c in CARS: # Update car position
             if c.driveIndex == len(c.TrafficLight.route): # If destination reached
                 CARS.remove(c)
-                c.TrafficLight.cars.remove(c) # Remove from the list
+                c.TrafficLight.vehicles.remove(c) # Remove from the list
                 del c # Delete object
                 break
             c.drive()
@@ -139,7 +139,7 @@ async def main():
                 if b.driveIndex == len(b.TrafficLight.route):
                     BIKES.remove(b)
                     try:
-                        b.TrafficLight.bikes.remove(b)
+                        b.TrafficLight.vehicles.remove(b)
                     except ValueError:
                         Nothing = True # Everything is permitted
                     del b
@@ -152,7 +152,7 @@ async def main():
                 if p.driveIndex == len(p.TrafficLight.route):
                     PEDESTRIANS.remove(p)
                     try:
-                        p.TrafficLight.pedestrians.remove(p)
+                        p.TrafficLight.vehicles.remove(p)
                     except ValueError:
                         Nothing = True
                     del p
@@ -164,7 +164,7 @@ async def main():
             for b in BUSES:
                 if b.driveIndex == len(b.TrafficLight.route):
                     BUSES.remove(b)
-                    b.TrafficLight.buses.remove(b)
+                    b.TrafficLight.vehicles.remove(b)
                     del b
                     break
                 b.drive()

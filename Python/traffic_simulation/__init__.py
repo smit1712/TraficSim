@@ -15,8 +15,8 @@ logging.basicConfig(
 LOGGER = logging.getLogger(__name__)
 # endregion
 
-# region Connection settings
-URI = "ws://localhost:5000"
+# region Connection uri
+URI = "ws://localhost:5000" # Change this URL to connect to a different host
 # endregion
 
 # region Global vars
@@ -25,6 +25,7 @@ GREEN = (0, 255, 0)
 ORANGE = (255, 140, 0)
 RED = (255, 0, 0)
 
+# Configures all lights, roads and next lights
 LIGHTS = [
     TrafficLight("A1", [(624, 895), (619, 712), (621, 600), (608, 430), (350, 385), (7, 391)],(621, 600)),
     TrafficLight("A2", [(656, 894), (651, 715), (652, 601), (645, 4)],  (652, 601)),
@@ -62,7 +63,8 @@ LIGHTS_PEDESTRIAN = [
         TrafficLight('FV2', [(373, 448),(376, 419), (374, 369), (387, 1)], (374, 369))),
 
     TrafficLight('FV4', [(383, 4), (373, 321), (375, 417)], (375, 417),
-        TrafficLight('FV3', [(375, 417),(374, 451), (373, 537), (347, 575), (5, 579)], (373, 537))),    TrafficLight('GV1', [(1228, 673), (774, 675), (613, 675)], (613, 675),
+        TrafficLight('FV3', [(375, 417),(374, 451), (373, 537), (347, 575), (5, 579)], (373, 537))),
+    TrafficLight('GV1', [(1228, 673), (774, 675), (613, 675)], (613, 675),
         TrafficLight('GV2', [(613, 675), (486, 679), (422, 682), (359, 680), (350, 610), (6, 610)], (485, 688))),
     TrafficLight('GV4', [(376, 892), (442, 676), (562, 678)], (562, 678),
         TrafficLight('GV3', [ (562, 678), (611, 678), (753, 678), (1224, 680)], (753, 678)))
@@ -83,12 +85,11 @@ BUSES = []
 
 ALL_Vehicles = [*CARS, *BIKES, *PEDESTRIANS, *BUSES]
 
+# Initial spawn time
 NEXT_SPAWN_CAR = datetime.now() + timedelta(seconds=10)
 NEXT_SPAWN_BIKE= datetime.now() + timedelta(seconds=15)
 NEXT_SPAWN_PEDESTRIAN = datetime.now() + timedelta(seconds=15)
 NEXT_SPAWN_BUS = datetime.now() + timedelta(seconds=50)
-NEXT_GREEN = datetime.now() + timedelta(0, 3)
-NEXT_SEND = datetime.now() + timedelta(0, 3)
 # endregion
 
 # region Pygame settings
@@ -98,15 +99,16 @@ display_width = 1238
 display_height = 897
 
 GAME_DISPLAY = pygame.display.set_mode((display_width, display_height), pygame.RESIZABLE)
-pygame.display.set_caption('traffic simulator')
+pygame.display.set_caption('Traffic Simulator')
 
 CLOCK = pygame.time.Clock()
 
-CROSS_ROAD_IMG = pygame.image.load('verkeerslichten.png')
-CAR_IMG = pygame.image.load("car.jpg").convert_alpha()
-BIKE_IMG = pygame.image.load('bike.jpg').convert_alpha()
-PEDESTRIAN_IMG = [pygame.image.load('pedestrian_coffee.jpg').convert_alpha(),
-                  pygame.image.load('pedestrian_dog.jpg').convert_alpha(),
-                  pygame.image.load('pedestrian_female.jpg').convert_alpha()]
-BUS_IMG = pygame.image.load('bus.jpg').convert_alpha()
+# Loading images
+CROSS_ROAD_IMG = pygame.image.load('img/verkeerslichten.png')
+CAR_IMG = pygame.image.load('img/car.jpg').convert_alpha()
+BIKE_IMG = pygame.image.load('img/bike.jpg').convert_alpha()
+PEDESTRIAN_IMG = [pygame.image.load('img/pedestrian_coffee.jpg').convert_alpha(),
+                  pygame.image.load('img/pedestrian_dog.jpg').convert_alpha(),
+                  pygame.image.load('img/pedestrian_female.jpg').convert_alpha()]
+BUS_IMG = pygame.image.load('img/bus.jpg').convert_alpha()
 # endregion
